@@ -41,6 +41,14 @@ fn main() -> Result<(), Box<dyn Error>>{
   }
 }
 
+fn clear_pins(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
+  for (i, light) in lights.iter().enumerate() {
+    println!("Clearing: L{i}");
+    light.set_value(0)?;
+  }
+  Ok(())
+}
+
 fn sequential_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
   println!("Sequential trigger");
   for (i, light) in lights.iter().enumerate() {
