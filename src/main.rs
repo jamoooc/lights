@@ -55,14 +55,19 @@ fn clear_pins(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
 
 fn sequential_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
   println!("Sequential trigger");
-  for (i, light) in lights.iter().enumerate() {
-    light.set_value(1)?;
-    sleep(Duration::from_millis(200));
-    println!("L{i}: ON");
+  for _ in 0..2 {
+    for (i, light) in lights.iter().enumerate() {
+      light.set_value(1)?;
+      sleep(Duration::from_millis(200));
+      println!("L{i}: ON");
 
-    light.set_value(0)?;
-    sleep(Duration::from_millis(200));
-    println!("L{i}: OFF");
+      light.set_value(0)?;
+      sleep(Duration::from_millis(200));
+      println!("L{i}: OFF");
+    }
+  }
+  Ok(())
+}
 
 fn split_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
   println!("Split trigger");
