@@ -12,7 +12,7 @@ const L6: u32 = 21; // GPIO21 PIN 40
 
 fn main() -> Result<(), Box<dyn Error>>{
 
-  // get the gpio adapater
+  // get the gpio adapter
   let mut chip = match Chip::new("/dev/gpiochip0") {
     Ok(c) => c,
     Err(e) => panic!("Oh no! No chip found!{:#?}", e)
