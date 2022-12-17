@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::thread::sleep;
 use std::error::Error;
-use gpio_cdev::{Chip, LineRequestFlags};
+use gpio_cdev::{Chip, LineHandle, LineRequestFlags};
 
 const L1: u32 = 13; // GPIO13 PIN 33
 const L2: u32 = 19; // GPIO19 PIN 35
@@ -34,11 +34,23 @@ fn main() -> Result<(), Box<dyn Error>>{
   }
 
   loop {
-    for light in lights.iter() {
-      light.set_value(1)?;
-      sleep(Duration::from_millis(200));
-      light.set_value(0)?;
-      sleep(Duration::from_millis(200));
+    match sequential_trigger(&lights) {
+      Ok(c) => c,
+      Err(e) => println!("Error running sequential trigger: {:#?}", e)
     }
   }
+}
+
+fn sequential_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
+  println!("Sequential trigger");
+  for (i, light) in lights.iter().enumerate() {
+    light.set_value(1)?;
+    sleep(Duration::from_millis(200));
+    println!("L{i}: ON");
+
+    light.set_value(0)?;
+    sleep(Duration::from_millis(200));
+    println!("L{i}: OFF");
+  }
+  Ok(())
 }
