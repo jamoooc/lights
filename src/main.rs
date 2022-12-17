@@ -38,6 +38,10 @@ fn main() -> Result<(), Box<dyn Error>>{
       Ok(c) => c,
       Err(e) => println!("Error running sequential trigger: {:#?}", e)
     }
+    match split_trigger(&lights) {
+      Ok(c) => c,
+      Err(e) => println!("Error running sequential trigger: {:#?}", e)
+    }
   }
 }
 
@@ -59,6 +63,31 @@ fn sequential_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
     light.set_value(0)?;
     sleep(Duration::from_millis(200));
     println!("L{i}: OFF");
+
+fn split_trigger(lights: &Vec<LineHandle>) -> Result<(), gpio_cdev::Error>{
+  println!("Split trigger");
+  for _ in 0..6 {
+    for (i, light) in lights.iter().enumerate() {
+      if i % 2 == 0 {
+        light.set_value(1)?;
+        println!("L{i}: ON");
+      } else {
+        light.set_value(0)?;
+        println!("L{i}: OFF");
+      }
+    }
+    sleep(Duration::from_millis(500));
+    for (i, light) in lights.iter().enumerate() {
+      if i % 2 != 0 {
+        light.set_value(1)?;
+        println!("L{i}: ON");
+      } else {
+        light.set_value(0)?;
+        println!("L{i}: OFF");
+      }
+    }
+    sleep(Duration::from_millis(500));
   }
+  clear_pins(lights).unwrap();
   Ok(())
 }
